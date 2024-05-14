@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ипотечный калькулятор</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+    <div style="position: absolute;top: 30%;left: 50%;transform: translate(-50%, -50%);">
+        <h1>Ипотечный калькулятор</h1>
+        <form method="post">
+            {{ form.csrf_token }}
+            {{ form.loan_amount.label }} {{ form.loan_amount }}<br><br>
+            {{ form.loan_term.label }} {{ form.loan_term }}<br><br>
+            {{ form.interest_rate.label }} {{ form.interest_rate }}<br><br>
+            {{ form.payment_type.label }} {{ form.payment_type }}<br><br>
+            {{ form.submit }}
+        </form>
+    </div>
+</body>
+</html>
