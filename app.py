@@ -4,6 +4,13 @@ from wtforms import IntegerField, FloatField, SelectField, SubmitField
 from wtforms.validators import InputRequired, NumberRange
 
 
+def calc_annuity_payment(loan_amount, loan_term, interest_rate):
+    monthly_interest_rate = interest_rate / 1200
+    monthly_payment = loan_amount * monthly_interest_rate * (1 + monthly_interest_rate) ** loan_term / (
+                (1 + monthly_interest_rate) ** loan_term - 1)
+    return round(monthly_payment, 2), round(monthly_payment * loan_term - loan_amount, 2), round(monthly_payment * loan_term, 2)
+
+
 def calc_diff_payment(loan_amount, loan_term, interest_rate):
     payments = []
 
@@ -13,9 +20,9 @@ def calc_diff_payment(loan_amount, loan_term, interest_rate):
     for i in range(loan_term):
         accrued_interest += loan_amount * interest_rate / 1200
         payments.append(tmp + loan_amount * interest_rate / 1200)
-        loan_amount -= tmp + loan_amount * interest_rate / 1200
+        loan_amount -= payments[-1]
 
-    return f"{round(payments[0], 2)}, ... {round(payments[-1], 2)}", round(accrued_interest, 2), round(sum(payments), 2)
+    return f"{round(payments[0], 2)}, ..., {round(payments[-1], 2)}", round(accrued_interest, 2), round(sum(payments), 2)
 
 
 app = Flask(__name__)
@@ -40,13 +47,9 @@ def mortgage_calculator():
         payment_type = form.payment_type.data
 
         result = dict()
-        monthly_interest_rate = interest_rate / 1200
 
         if payment_type == 'annuity':
-            result['monthly_payment'] = round(loan_amount * (monthly_interest_rate * (1 + monthly_interest_rate) ** loan_term) / (
-                        (1 + monthly_interest_rate) ** loan_term - 1), 2)
-            result['accrued_interest'] = round(result['monthly_payment'] * loan_term - loan_amount, 2)
-            result['sum_payments'] = result['monthly_payment'] * loan_term
+            result['monthly_payment'], result['accrued_interest'], result['sum_payments'] = calc_annuity_payment(loan_amount, loan_term, interest_rate)
         else:
             result['monthly_payment'], result['accrued_interest'], result['sum_payments'] = calc_diff_payment(loan_amount, loan_term, interest_rate)
 
